@@ -40,7 +40,7 @@ import { useTimezone } from "@/hooks/use-timezone";
 import { useAccount } from "@/hooks/use-account";
 import type { Mt5Account, Trade } from "@shared/schema";
 import { isPerfectProfitFactor } from "@shared/trade-utils";
-import { apiRequest, queryClient } from "@/lib/queryClient";
+import { apiRequest, authFetch, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
 interface DashboardMetrics {
@@ -401,7 +401,7 @@ export default function ProfessionalDashboard() {
   const { data: trades } = useQuery({
     queryKey: ["/api/trades", selectedAccountId ?? "__all__"],
     queryFn: async () => {
-      const res = await fetch(`/api/trades${queryParam}`);
+      const res = await authFetch(`/api/trades${queryParam}`);
       return res.json() as Promise<Trade[]>;
     },
   });
@@ -413,7 +413,7 @@ export default function ProfessionalDashboard() {
       if (selectedAccountId) {
         params.set("accountId", selectedAccountId);
       }
-      const res = await fetch(`/api/stats?${params.toString()}`);
+      const res = await authFetch(`/api/stats?${params.toString()}`);
       return res.json() as Promise<DashboardStats>;
     },
   });
@@ -430,7 +430,7 @@ export default function ProfessionalDashboard() {
         params.set("accountId", selectedAccountId);
       }
       const suffix = params.toString();
-      const res = await fetch(`/api/dashboard/reflection/suggestions${suffix ? `?${suffix}` : ""}`);
+      const res = await authFetch(`/api/dashboard/reflection/suggestions${suffix ? `?${suffix}` : ""}`);
       return res.json() as Promise<{ updatedAt: string; suggestions: ReflectionSuggestion[] }>;
     },
   });

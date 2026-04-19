@@ -27,6 +27,7 @@ import { cn, formatCurrency, getTzAbbr } from "@/lib/utils";
 import { useAccount } from "@/hooks/use-account";
 import { useTimezone } from "@/hooks/use-timezone";
 import { isPerfectProfitFactor } from "@shared/trade-utils";
+import { authFetch } from "@/lib/queryClient";
 
 type Period = "daily" | "weekly" | "monthly";
 
@@ -359,7 +360,7 @@ export default function ReportsPage() {
       if (selectedAccountId) {
         params.set("accountId", selectedAccountId);
       }
-      const res = await fetch(`/api/reports?${params.toString()}`);
+      const res = await authFetch(`/api/reports?${params.toString()}`);
       if (!res.ok) throw new Error("Failed to generate report");
       return res.json();
     },

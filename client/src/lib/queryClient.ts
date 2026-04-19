@@ -47,6 +47,21 @@ export async function buildAuthHeaders(): Promise<Record<string, string>> {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
+/**
+ * Authenticated fetch helper for use in query functions.
+ * Automatically includes auth headers and CSRF token.
+ */
+export async function authFetch(url: string, options: RequestInit = {}): Promise<Response> {
+  const authHeaders = await buildAuthHeaders();
+  const headers: HeadersInit = { ...authHeaders, ...options.headers };
+  
+  return fetch(url, {
+    ...options,
+    headers,
+    credentials: "include",
+  });
+}
+
 export async function apiRequest(
   method: string,
   url: string,

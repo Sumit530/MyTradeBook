@@ -45,7 +45,7 @@ import {
   NotebookPen,
 } from "lucide-react";
 import { formatCurrency, formatDate, formatDuration, getProfitColor, cn, getTradeNetPnl } from "@/lib/utils";
-import { apiRequest, buildAuthHeaders, queryClient } from "@/lib/queryClient";
+import { apiRequest, authFetch, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAccount } from "@/hooks/use-account";
 import { useTimezone } from "@/hooks/use-timezone";
@@ -210,7 +210,7 @@ function TradeDetailDialog({
     queryKey: ["/api/trades", trade?.id, "notes"],
     enabled: !!trade?.id,
     queryFn: async () => {
-      const res = await fetch(`/api/trades/${trade?.id}/notes`);
+      const res = await authFetch(`/api/trades/${trade?.id}/notes`);
       if (!res.ok) throw new Error("Failed to fetch trade notes");
       return res.json();
     },
@@ -220,7 +220,7 @@ function TradeDetailDialog({
     queryKey: ["/api/trades", trade?.id],
     enabled: !!trade?.id,
     queryFn: async () => {
-      const res = await fetch(`/api/trades/${trade?.id}`);
+      const res = await authFetch(`/api/trades/${trade?.id}`);
       if (!res.ok) throw new Error("Failed to fetch trade");
       return res.json();
     },
@@ -233,7 +233,7 @@ function TradeDetailDialog({
       const params = new URLSearchParams();
       params.set("style", analysisStyle);
       if (accountId) params.set("accountId", accountId);
-      const res = await fetch(`/api/ai/trades/${trade?.id}?${params.toString()}`);
+      const res = await authFetch(`/api/ai/trades/${trade?.id}?${params.toString()}`);
       if (!res.ok) throw new Error("Failed to fetch trade AI analysis");
       return res.json();
     },
@@ -855,7 +855,7 @@ function TradesPageInner() {
   const { data: trades, isLoading, isError } = useQuery<Trade[]>({
     queryKey: ["/api/trades", selectedAccountId],
     queryFn: async () => {
-      const res = await fetch(`/api/trades${queryParam}`);
+      const res = await authFetch(`/api/trades${queryParam}`);
       if (!res.ok) throw new Error("Failed to fetch trades");
       return res.json();
     },

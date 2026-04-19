@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { buildAuthHeaders } from "@/lib/queryClient";
+import { buildAuthHeaders, authFetch } from "@/lib/queryClient";
 import { Plus, Copy, Download, Share2, TrendingUp } from "lucide-react";
 
 interface Template {
@@ -46,7 +46,7 @@ export function TemplatesPage() {
 
   const fetchTemplates = async () => {
     try {
-      const response = await fetch("/api/templates");
+      const response = await authFetch("/api/templates");
       const data = await response.json();
       setTemplates(data);
     } catch (error) {
@@ -58,7 +58,7 @@ export function TemplatesPage() {
 
   const fetchPublicTemplates = async () => {
     try {
-      const response = await fetch("/api/templates/public");
+      const response = await authFetch("/api/templates/public");
       const data = await response.json();
       setPublicTemplates(data);
     } catch (error) {

@@ -19,7 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { useAccount } from "@/hooks/use-account";
-import { apiRequest, queryClient } from "@/lib/queryClient";
+import { apiRequest, authFetch, queryClient } from "@/lib/queryClient";
 
 type AlertType =
   | "loss"
@@ -204,9 +204,7 @@ export default function AlertsPage() {
     queryFn: async () => {
       const params = new URLSearchParams();
       if (selectedAccountId) params.set("accountId", selectedAccountId);
-      const response = await fetch(`/api/alerts${params.toString() ? `?${params.toString()}` : ""}`, {
-        credentials: "include",
-      });
+      const response = await authFetch(`/api/alerts${params.toString() ? `?${params.toString()}` : ""}`);
       if (!response.ok) throw new Error("Failed to load alerts");
       return response.json() as Promise<AlertRecord[]>;
     },
@@ -217,9 +215,7 @@ export default function AlertsPage() {
     queryFn: async () => {
       const params = new URLSearchParams({ limit: "20" });
       if (selectedAccountId) params.set("accountId", selectedAccountId);
-      const response = await fetch(`/api/alerts/history?${params.toString()}`, {
-        credentials: "include",
-      });
+      const response = await authFetch(`/api/alerts/history?${params.toString()}`);
       if (!response.ok) throw new Error("Failed to load alert history");
       return response.json() as Promise<AlertHistoryRecord[]>;
     },

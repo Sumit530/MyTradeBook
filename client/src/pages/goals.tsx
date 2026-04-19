@@ -54,7 +54,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { apiRequest, queryClient } from "@/lib/queryClient";
+import { apiRequest, authFetch, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { cn, formatCurrency, getTradeNetPnl } from "@/lib/utils";
 import { useAccount } from "@/hooks/use-account";
@@ -724,7 +724,7 @@ export default function GoalsPage() {
   const { data: trades } = useQuery<Trade[]>({
     queryKey: ["/api/trades", selectedAccountId],
     queryFn: async () => {
-      const res = await fetch(`/api/trades${queryParam}`);
+      const res = await authFetch(`/api/trades${queryParam}`);
       if (!res.ok) throw new Error("Failed to fetch trades");
       return res.json();
     },

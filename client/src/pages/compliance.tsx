@@ -12,6 +12,7 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { TrendingUp, AlertCircle, CheckCircle2 } from "lucide-react";
+import { authFetch } from "@/lib/queryClient";
 
 interface RuleMetrics {
   ruleId: string;
@@ -42,6 +43,7 @@ export function CompliancePage() {
   const { toast } = useToast();
   const [metrics, setMetrics] = useState<ComplianceMetrics | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [period, setPeriod] = useState<"daily" | "weekly" | "monthly">("monthly");
 
   useEffect(() => {
@@ -49,12 +51,23 @@ export function CompliancePage() {
   }, [period]);
 
   const fetchCompliance = async () => {
+    setLoading(true);
+    setLoadError(null);
     try {
-      const response = await fetch(`/api/compliance/score?period=${period}`);
+      const response = await authFetch(`/api/compliance/score?period=${period}`);
+      if (!response.ok) {
+        throw new Error("Failed to load compliance data");
+      }
       const data = await response.json();
-      setMetrics(data);
+      if (!data || !Array.isArray(data.perRule) || !data.insights) {
+        throw new Error("Invalid compliance response");
+      }
+      setMetrics(data as ComplianceMetrics);
     } catch (error) {
-      toast({ title: "Error", description: "Failed to load compliance data", variant: "destructive" });
+      const message = error instanceof Error ? error.message : "Failed to load compliance data";
+      setLoadError(message);
+      setMetrics(null);
+      toast({ title: "Error", description: message, variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -69,10 +82,24 @@ export function CompliancePage() {
     F: "text-red-600 bg-red-50",
   };
 
-  if (!metrics)
+  if (loading)
     return (
       <div className="flex justify-center items-center h-96">
         <p className="text-gray-500">Loading compliance data...</p>
+      </div>
+    );
+
+  if (loadError)
+    return (
+      <div className="flex justify-center items-center h-96">
+        <p className="text-red-600">{loadError}</p>
+      </div>
+    );
+
+  if (!metrics)
+    return (
+      <div className="flex justify-center items-center h-96">
+        <p className="text-gray-500">No compliance data available.</p>
       </div>
     );
 

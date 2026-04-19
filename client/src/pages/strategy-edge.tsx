@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useAccount } from "@/hooks/use-account";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest, buildAuthHeaders, queryClient } from "@/lib/queryClient";
+import { apiRequest, authFetch, buildAuthHeaders, queryClient } from "@/lib/queryClient";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -255,8 +255,8 @@ export default function StrategyEdgePage() {
       const params = new URLSearchParams();
       if (accountId) params.set("accountId", accountId);
       const url = params.size > 0 ? `/api/ai/strategy-edge?${params.toString()}` : "/api/ai/strategy-edge";
-      const response = await fetch(url, { credentials: "include" });
-      if (!response.ok) throw new Error("Failed to fetch strategy analysis");
+      const response = await authFetch(url);
+      if (!response.ok) throw new Error(await readErrorMessage(response, "Failed to fetch strategy analysis"));
       const contentType = response.headers.get("content-type") || "";
       if (!contentType.includes("application/json")) {
         throw new Error("Unexpected response from server");
@@ -272,9 +272,8 @@ export default function StrategyEdgePage() {
       const params = new URLSearchParams();
       if (accountId) params.set("accountId", accountId);
       const suffix = params.toString();
-      const response = await fetch(`/api/strategy-edge/concepts${suffix ? `?${suffix}` : ""}`, {
-        credentials: "include",
-      });
+      const response = await authFetch(`/api/strategy-edge/concepts${suffix ? `?${suffix}` : ""}`);
+
       if (!response.ok) {
         throw new Error("Failed to load strategy concept notes");
       }

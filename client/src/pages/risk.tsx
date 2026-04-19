@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useAccount } from "@/hooks/use-account";
+import { authFetch } from "@/lib/queryClient";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -79,7 +80,7 @@ export default function RiskPage() {
       const params = new URLSearchParams();
       if (accountId) params.set("accountId", accountId);
       const url = params.size > 0 ? `/api/ai/risk?${params.toString()}` : "/api/ai/risk";
-      const response = await fetch(url);
+      const response = await authFetch(url);
       if (!response.ok) throw new Error("Failed to fetch risk analysis");
       const contentType = response.headers.get("content-type") || "";
       if (!contentType.includes("application/json")) {

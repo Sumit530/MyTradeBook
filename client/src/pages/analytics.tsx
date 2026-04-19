@@ -28,6 +28,7 @@ import {
 import type { Trade } from "@shared/schema";
 import { useAccount } from "@/hooks/use-account";
 import { isPerfectProfitFactor } from "@shared/trade-utils";
+import { authFetch } from "@/lib/queryClient";
 
 interface Stats {
   totalTrades: number;
@@ -406,7 +407,7 @@ export default function AnalyticsPage() {
       const params = new URLSearchParams();
       if (selectedAccountId) params.set("accountId", selectedAccountId);
       params.set("timezone", timezone);
-      const res = await fetch(`/api/stats?${params.toString()}`);
+      const res = await authFetch(`/api/stats?${params.toString()}`);
       if (!res.ok) throw new Error("Failed to fetch stats");
       return res.json();
     },
@@ -415,7 +416,7 @@ export default function AnalyticsPage() {
   const { data: trades, isLoading: tradesLoading, isError: tradesError } = useQuery<Trade[]>({
     queryKey: ["/api/trades", selectedAccountId],
     queryFn: async () => {
-      const res = await fetch(`/api/trades${queryParam}`);
+      const res = await authFetch(`/api/trades${queryParam}`);
       if (!res.ok) throw new Error("Failed to fetch trades");
       return res.json();
     },

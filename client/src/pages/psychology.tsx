@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { AlertTriangle, Target } from "lucide-react";
+import { authFetch } from "@/lib/queryClient";
 
 interface TraderMistake {
   type: string;
@@ -118,7 +119,7 @@ export default function PsychologyPage() {
       const params = new URLSearchParams();
       if (accountId) params.set("accountId", accountId);
       const url = params.size > 0 ? `/api/ai/psychology?${params.toString()}` : "/api/ai/psychology";
-      const response = await fetch(url);
+      const response = await authFetch(url);
       if (!response.ok) throw new Error("Failed to fetch psychology analysis");
       const contentType = response.headers.get("content-type") || "";
       if (!contentType.includes("application/json")) {

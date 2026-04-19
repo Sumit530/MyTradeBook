@@ -18,7 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { useAccount } from "@/hooks/use-account";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest, queryClient } from "@/lib/queryClient";
+import { apiRequest, authFetch, queryClient } from "@/lib/queryClient";
 
 interface DashboardReflection {
   userId: string;
@@ -168,10 +168,8 @@ export default function NotesPage() {
         params.set("accountId", selectedAccountId);
       }
       const query = params.toString();
-      const response = await fetch(`/api/dashboard/reflection/suggestions${query ? `?${query}` : ""}`, {
-        credentials: "include",
-      });
-      if (!response.ok) {
+      const response = await authFetch(`/api/dashboard/reflection/suggestions${query ? `?${query}` : ""}`)   
+         if (!response.ok) {
         throw new Error("Failed to load notes suggestions");
       }
       return response.json() as Promise<{ updatedAt: string; suggestions: ReflectionSuggestion[] }>;

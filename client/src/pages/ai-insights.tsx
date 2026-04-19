@@ -14,7 +14,7 @@ import {
 import { useAccount } from "@/hooks/use-account";
 import { useAnalysisStyle } from "@/hooks/use-analysis-style";
 import { formatCurrency, getProfitColor, cn } from "@/lib/utils";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, authFetch } from "@/lib/queryClient";
 import { Brain, Shield, TrendingUp, Gauge, Target, Download } from "lucide-react";
 
 type TradeAnalysis = {
@@ -301,7 +301,7 @@ export default function AiInsightsPage() {
   const { data, isLoading, isError } = useQuery<PortfolioAnalysis>({
     queryKey: ["/api/ai/portfolio", selectedAccount?.id || "__all__", style],
     queryFn: async () => {
-      const res = await fetch(`/api/ai/portfolio${query}`);
+      const res = await authFetch(`/api/ai/portfolio${query}`);
       if (!res.ok) throw new Error("Failed to fetch AI insights");
       return res.json();
     },

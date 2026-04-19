@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { BarChart, Bar, XAxis, YAxis, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { TrendingUp, TrendingDown, AlertCircle } from "lucide-react";
+import { authFetch } from "@/lib/queryClient";
 
 interface HeatmapData {
   key: string;
@@ -50,7 +51,10 @@ export function HeatmapsPage() {
       const data: Record<string, HeatmapMetrics> = {};
 
       for (const type of types) {
-        const response = await fetch(`/api/heatmaps/${type}`);
+        const response = await authFetch(`/api/heatmaps/${type}`);
+        if (!response.ok) {
+          throw new Error(`Failed to load ${type} heatmap`);
+        }
         const heatmapData = await response.json();
         data[type] = heatmapData;
       }
@@ -58,7 +62,10 @@ export function HeatmapsPage() {
       setHeatmaps(data);
 
       // Fetch insights
-      const insightsResponse = await fetch("/api/heatmaps/insights");
+      const insightsResponse = await authFetch("/api/heatmaps/insights");
+      if (!insightsResponse.ok) {
+        throw new Error("Failed to load heatmap insights");
+      }
       const insightsData = await insightsResponse.json();
       setInsights(insightsData.insights || []);
     } catch (error) {
